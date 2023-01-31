@@ -1,11 +1,7 @@
-// only website URL, Loead this Page,
+import MeetupDetail from '@/components/meetups/meetupDetail';
+import { useRouter } from 'next/router'
+import React, { useEffect, useState } from 'react'
 
-
-// import MeetupList from '@/components/meetups/meetuplist'
-
-import MeetupList from "../components/meetups/meetuplist"
-import Link from 'next/link'
-import React, { Fragment, useEffect, useState } from 'react'
 const DUMMYDATA=[
     {
         id:1,
@@ -45,29 +41,46 @@ const DUMMYDATA=[
         address:"Some Address demo Address",
         description:"this is the defail description of this blog.. please read this adll. "
     }
-    
 ]
-const HomePage = (props) => {
-
-//    const[loadMeetups, setLoadMeetups]= useState([])
-//    useEffect(()=>{
-
-//     setLoadMeetups(DUMMYDATA)
-//    },[])
-    return (
-        <Fragment>
-            <MeetupList meetups={props.meetups} />
-        </Fragment>
-
-    )
-}
-
-export async function getStaticProps(){
+export async function getStaticPaths() {
+    const paths = DUMMYDATA.map(item => ({
+        params: { newid: item.id.toString() },
+      }));
+    return {
+      paths:paths,
+      fallback: false, // can also be true or 'blocking'
+    }
+  }
+export async function getStaticProps(context){
+    console.log(context)
+    const id = context.params.newid;
+    const result= DUMMYDATA.find(item=> item.id==id)
+    console.log(result)
     return{
         props:{
-            meetups: DUMMYDATA
-        },
-        revalidate:10
+            meetup:result
+        }
     }
 }
-export default HomePage
+const NewsDetailPage = (props) => {
+   console.log(props.meetup)
+    const router= useRouter();
+    // const newsid= router.query.newid
+    // const [dnew, setDnew]= useState({})
+    // const [loading, setLoading]= useState(false)
+    // useEffect(() => {
+    //     const item = DUMMYDATA.find(item => item.id === newsid);
+    //     if (item) {
+    //       setDnew(item);
+    //     }
+    //   }, [newsid]);
+
+    // if(!dnew) return <p>No data</p>
+    return (
+    <div>
+        <MeetupDetail data={props.meetup} />
+    </div>
+  )
+}
+
+export default NewsDetailPage
