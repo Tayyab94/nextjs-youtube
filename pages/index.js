@@ -2,51 +2,11 @@
 
 
 // import MeetupList from '@/components/meetups/meetuplist'
-
+import {MongoClient} from "mongodb"
 import MeetupList from "../components/meetups/meetuplist"
 import Link from 'next/link'
 import React, { Fragment, useEffect, useState } from 'react'
-const DUMMYDATA=[
-    {
-        id:1,
-        title:"This is first Meetup",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:2,
-        title:"This is Second Demo Meetup",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:3,
-        title:"The best mobile ever",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:4,
-        title:"Use Lenove laptop for Gamming.",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    
 
-    {
-        id:5,
-        title:"How to Learn the Nextjs",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:6,
-        title:"Meetup is the best dmeo title",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    }
-    
-]
 const HomePage = (props) => {
 
 //    const[loadMeetups, setLoadMeetups]= useState([])
@@ -63,11 +23,24 @@ const HomePage = (props) => {
 }
 
 export async function getStaticProps(){
+
+    const client= await MongoClient.connect("mongodb+srv://username123:username123@cluster0.vrlrh9e.mongodb.net/nextjs-coursedb?retryWrites=true&w=majority")
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups')
+   const meetups= await meetupsCollection.find().toArray();
+   
+   client.close();
     return{
         props:{
-            meetups: DUMMYDATA
+            meetups: meetups.map(item=>({
+                title:item.title,
+                address: item.address,
+                image: item.image,
+                description: item.description,
+                id: item._id.toString()
+            }))
         },
-        revalidate:10
+        revalidate:1
     }
 }
 export default HomePage

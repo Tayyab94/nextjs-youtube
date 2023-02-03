@@ -14,7 +14,7 @@ const MeetupList = ({ meetups }) => {
 
                     return <div key={item.id || index} >
                         <div className='innerbox'>    
-                        <Link href={`/news/${item.address}`}>                    
+                        <Link href={`/news/${item.id}`}>                    
                         <h2>Serial No{item.id}- <span>{item.address}</span></h2>
                         </Link>
                         <h3>title : {item.title}</h3>

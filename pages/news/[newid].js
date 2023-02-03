@@ -1,81 +1,45 @@
 import MeetupDetail from '@/components/meetups/meetupDetail';
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import { MongoClient, ObjectId } from 'mongodb';
 
-const DUMMYDATA=[
-    {
-        id:1,
-        title:"This is first Meetup",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:2,
-        title:"This is Second Demo Meetup",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:3,
-        title:"The best mobile ever",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:4,
-        title:"Use Lenove laptop for Gamming.",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    
-
-    {
-        id:5,
-        title:"How to Learn the Nextjs",
-        address:"Some Address 123",
-        description:"this is the defail description of this blog.. please read this adll. "
-    },
-    {
-        id:6,
-        title:"Meetup is the best dmeo title",
-        address:"Some Address demo Address",
-        description:"this is the defail description of this blog.. please read this adll. "
-    }
-]
 export async function getStaticPaths() {
-    const paths = DUMMYDATA.map(item => ({
-        params: { newid: item.id.toString() },
-      }));
+    const client= await MongoClient.connect("mongodb+srv://username123:username123@cluster0.vrlrh9e.mongodb.net/nextjs-coursedb?retryWrites=true&w=majority")
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups')
+   const meetups= await meetupsCollection.find({},{_id:1}).toArray();
+   client.close()
     return {
-      paths:paths,
+      paths:meetups.map(item=>({
+        params:{newid: item._id.toString()}
+      })),
       fallback: false, // can also be true or 'blocking'
     }
   }
 export async function getStaticProps(context){
-    console.log(context)
-    const id = context.params.newid;
-    const result= DUMMYDATA.find(item=> item.id==id)
-    console.log(result)
+
+    const client= await MongoClient.connect("mongodb+srv://username123:username123@cluster0.vrlrh9e.mongodb.net/nextjs-coursedb?retryWrites=true&w=majority")
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups')
+   const selectedMeetup= await meetupsCollection.findOne({_id:new  ObjectId(context.params.newid)});
+
+    client.close()
     return{
         props:{
-            meetup:result
+            meetup:{
+                title:selectedMeetup.title,
+                address: selectedMeetup.address,
+                image: selectedMeetup.image,
+                description: selectedMeetup.description,
+                id: selectedMeetup._id.toString()
+            }
         }
     }
 }
 const NewsDetailPage = (props) => {
-   console.log(props.meetup)
-    const router= useRouter();
-    // const newsid= router.query.newid
-    // const [dnew, setDnew]= useState({})
-    // const [loading, setLoading]= useState(false)
-    // useEffect(() => {
-    //     const item = DUMMYDATA.find(item => item.id === newsid);
-    //     if (item) {
-    //       setDnew(item);
-    //     }
-    //   }, [newsid]);
 
-    // if(!dnew) return <p>No data</p>
+    const router= useRouter();
+
     return (
     <div>
         <MeetupDetail data={props.meetup} />
