@@ -2,6 +2,7 @@ import MeetupDetail from '@/components/meetups/meetupDetail';
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { MongoClient, ObjectId } from 'mongodb';
+import Head from 'next/head';
 
 export async function getStaticPaths() {
     const client= await MongoClient.connect("mongodb+srv://username123:username123@cluster0.vrlrh9e.mongodb.net/nextjs-coursedb?retryWrites=true&w=majority")
@@ -42,6 +43,10 @@ const NewsDetailPage = (props) => {
 
     return (
     <div>
+        <Head>
+            <title>{props.meetup.title}</title>
+            <meta name='desctiption' content={props.meetup.description}></meta>
+        </Head>
         <MeetupDetail data={props.meetup} />
     </div>
   )

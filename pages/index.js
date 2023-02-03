@@ -6,7 +6,7 @@ import {MongoClient} from "mongodb"
 import MeetupList from "../components/meetups/meetuplist"
 import Link from 'next/link'
 import React, { Fragment, useEffect, useState } from 'react'
-
+import Head from "next/head"
 const HomePage = (props) => {
 
 //    const[loadMeetups, setLoadMeetups]= useState([])
@@ -16,6 +16,10 @@ const HomePage = (props) => {
 //    },[])
     return (
         <Fragment>
+            <Head>
+                <title>React-Meetup App</title>
+                <meta name="description" content="In a Meetup app you will see the huge list of active meetups that are availble here"></meta>
+            </Head>
             <MeetupList meetups={props.meetups} />
         </Fragment>
 
